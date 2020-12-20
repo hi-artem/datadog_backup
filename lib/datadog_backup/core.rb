@@ -27,9 +27,10 @@ module DatadogBackup
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
     def diff(id)
-      current = except(get_by_id(id)).deep_sort.to_yaml
+      current = except(get_by_id(id))
+      current_yaml = current ? current.deep_sort.to_yaml : {}
       filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
-      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
+      result = ::Diffy::Diff.new(current_yaml, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
       logger.debug("Compared ID #{id} and found #{result}")
       result
     end
@@ -106,7 +107,7 @@ module DatadogBackup
       retries ||= 0
 
       response = api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
-      return create(body) if response[0] == '404'
+      return create(body) if response[0] == '404' || response[0] == '400'
       logger.warn 'Successfully restored to datadog.'
       response[1]
     rescue ::Net::OpenTimeout => e

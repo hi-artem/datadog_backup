@@ -31,5 +31,10 @@ module DatadogBackup
     def get_by_id(id)
       except(all_logs_pipelines.select { |log_pipeline| log_pipeline['id'].to_s == id.to_s }.first)
     end
+
+    def initialize(options)
+      super(options)
+      @banlist = %w[is_read_only type].freeze
+    end
   end
 end
