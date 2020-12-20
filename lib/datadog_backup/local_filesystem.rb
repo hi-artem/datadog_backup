@@ -26,7 +26,14 @@ module DatadogBackup
     end
 
     def class_from_id(id)
-      class_string = ::File.dirname(find_file_by_id(id)).split('/').last.capitalize
+      case ::File.dirname(find_file_by_id(id)).split('/').last
+      when 'monitors'
+        class_string = 'Monitors'
+      when 'dashboards'
+        class_string = 'Dashboards'
+      when 'logspipelines'
+        class_string = 'LogsPipelines'
+      end
       ::DatadogBackup.const_get(class_string)
     end
 

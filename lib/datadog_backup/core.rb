@@ -86,7 +86,8 @@ module DatadogBackup
 
       response = yield
       # if object wasn't found we return empty object
-      return {} if response[0] == '404'
+      # logs-pipelines endpoint return 400 when not found
+      return {} if response[0] == '404' || response[0] == '400'
       raise "Request failed with error #{response}" unless response[0] == '200'
 
       response[1]
