@@ -34,7 +34,7 @@ module DatadogBackup
 
     def initialize(options)
       super(options)
-      @banlist = %w[is_read_only type].freeze
+      @banlist = %w[id is_read_only type].freeze
     end
   end
 end
