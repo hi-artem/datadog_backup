@@ -21,8 +21,9 @@ LOGGER.level = Logger::INFO
   datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   diff_format: :color,
-  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::LogsPipelines],
   output_format: :yaml,
+  force_restore: false,
   logger: LOGGER
 }
 
@@ -54,6 +55,9 @@ def prereqs
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
     end
+    opts.on('--logs-pipelines-only') do
+      @options[:resources] = [DatadogBackup::LogsPipelines]
+    end
     opts.on('--json', 'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.') do
       @options[:output_format] = :json
     end
@@ -62,6 +66,9 @@ def prereqs
     end
     opts.on('--diff-format FORMAT', 'one of `color`, `html_simple`, `html`') do |format|
       @options[:diff_format] = format.to_sym
+    end
+    opts.on('--force-restore', 'force restore to Datadog') do
+      @options[:force_restore] = true
     end
   end
   options.parse!
